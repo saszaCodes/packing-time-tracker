@@ -1,28 +1,22 @@
 import React from "react";
 import "./App.css";
+import { AddEntry } from "./pages/AddEntry";
+import { DisplayEntries } from "./pages/DisplayEntries";
+import { QueryProvider } from "./queries/QueryProvider";
 
-if (process.env.NODE_ENV === "development") {
+console.log(process.env.NODE_ENV);
+
+if (["development", "test"].includes(process.env.NODE_ENV)) {
+  console.log("Worker is registered");
   const { worker } = require("./mocks/browser");
   worker.start();
 }
-
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryProvider>
+      {/* <AddEntry /> */}
+      <DisplayEntries />
+    </QueryProvider>
   );
 }
 
