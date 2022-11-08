@@ -31,19 +31,19 @@ const getOrdersResponse = {
 };
 
 export const handlersRespondingWithOK = [
-  rest.get(ordersUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(getOrdersResponse));
+  rest.get(ordersUrl, async (req, res, ctx) => {
+    return await res(ctx.status(200), ctx.json(getOrdersResponse));
   }),
-  rest.post(ordersUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(getOrdersResponse));
+  rest.post(ordersUrl, async (req, res, ctx) => {
+    return await res(ctx.status(200), ctx.json(getOrdersResponse));
   }),
 ];
 
 export const handlersRespondingWithError = [
-  rest.get(ordersUrl, (req, res, ctx) => {
-    return res(ctx.status(500));
+  rest.get(ordersUrl, async (req, res, ctx) => {
+    return await res(ctx.status(500));
   }),
-  rest.post(ordersUrl, (req, res, ctx) => {
-    return res(ctx.status(200));
+  rest.post(ordersUrl, async (req, res, ctx) => {
+    return await res(ctx.status(200));
   }),
 ];

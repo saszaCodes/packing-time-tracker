@@ -1,5 +1,6 @@
-import { InputHTMLAttributes, useRef } from "react";
+import { InputHTMLAttributes } from "react";
 import { useForm, RegisterOptions } from "react-hook-form";
+import { usePostOrders } from "../queries/hooks/usePostOrders";
 
 type FormFields =
   | "title"
@@ -18,17 +19,12 @@ export const AddEntry = () => {
     getValues,
     formState: { errors },
   } = useForm();
+  const { mutate } = usePostOrders();
 
-  const formEl = useRef<HTMLFormElement>(null);
-
-  const onSubmit = (e: any) => {
+  const onSubmit = () => {
     const values = getValues();
-    sendData(values);
-  };
-
-  const sendData = (e: any) => {
-    // TODO: add sending and onsuccess callback
-    console.log(e);
+    console.log(values);
+    mutate(values, { onSuccess: (res) => console.log(res) });
   };
 
   const generateInput = (
@@ -51,12 +47,7 @@ export const AddEntry = () => {
 
   return (
     <>
-      <form
-        ref={formEl}
-        // action={ordersUrl}
-        // method="POST"
-        data-testid="add-entry-form"
-      >
+      <form data-testid="add-entry-form">
         <>
           {generateInput(
             "title",
@@ -92,7 +83,7 @@ export const AddEntry = () => {
             "duration",
             "Czas trwania",
             { type: "number", placeholder: "Wpisz czas trwania" },
-            { required: true, pattern: /\d{4}-\d{2}-\d{2}/ }
+            { required: true }
           )}
           {generateInput(
             "units",
@@ -102,7 +93,9 @@ export const AddEntry = () => {
           )}
         </>
       </form>
-      <button onClick={() => handleSubmit(onSubmit)()}>Wyślij formularz</button>
+      <button onClick={() => handleSubmit(onSubmit)()} title="Wyślij formularz">
+        Wyślij formularz
+      </button>
     </>
   );
 };
