@@ -5,13 +5,11 @@ import { ordersUrl, POST_ORDERS } from "../../utils/constants";
 export const usePostOrders = () => {
   const mutationResponse = useMutation(
     POST_ORDERS,
-    async (formValues: FieldValues) => {
-      console.log({ formValues });
-      return await fetch(ordersUrl, {
+    async (formValues: FieldValues) =>
+      await fetch(ordersUrl, {
         method: "POST",
         body: JSON.stringify(formValues),
-      });
-    }
+      }).then((res) => res.json())
   );
   return { ...mutationResponse };
 };

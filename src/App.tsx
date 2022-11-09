@@ -1,7 +1,5 @@
-import React from "react";
-import "./App.css";
 import { AddEntry } from "./pages/AddEntry";
-import { DisplayEntries } from "./pages/DisplayEntries";
+import { DisplayEntries } from "./pages/DisplayEntries/DisplayEntries";
 import { QueryProvider } from "./queries/QueryProvider";
 
 console.log(process.env.NODE_ENV);
@@ -14,8 +12,8 @@ if (["development", "test"].includes(process.env.NODE_ENV)) {
 function App() {
   return (
     <QueryProvider>
-      {/* <AddEntry /> */}
       <DisplayEntries />
+      <AddEntry />
     </QueryProvider>
   );
 }

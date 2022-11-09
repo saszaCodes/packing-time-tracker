@@ -1,30 +1,63 @@
-import { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes, useState } from "react";
 import { useForm, RegisterOptions } from "react-hook-form";
 import { usePostOrders } from "../queries/hooks/usePostOrders";
+import { validationRules } from "../utils/constants";
+import Papa from "papaparse";
+import { Order, Orders } from "../types/DTOs";
 
-type FormFields =
-  | "title"
-  | "areaName"
-  | "type"
-  | "units"
-  | "id"
-  | "date"
-  | "duration"
-  | "units";
+const formFields = [
+  "title",
+  "areaName",
+  "type",
+  "units",
+  "id",
+  "date",
+  "duration",
+  "file",
+] as const;
+type FormFields = typeof formFields[number];
 
 export const AddEntry = () => {
   const {
     register,
     handleSubmit,
     getValues,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<Order & { file: File }>();
   const { mutate } = usePostOrders();
+  const [uploadMode, setUploadMode] = useState<"form" | "file">("file");
+  const [csvFile, setCsvFile] = useState<File>();
 
-  const onSubmit = () => {
-    const values = getValues();
-    console.log(values);
-    mutate(values, { onSuccess: (res) => console.log(res) });
+  const onSubmit = async () => {
+    let values: Orders = [getValues()];
+    if (uploadMode === "file") {
+      await new Promise<void>((res) => {
+        // TODO: handle case when CSV file doesn't exist
+        csvFile &&
+          Papa.parse<Order>(csvFile, {
+            header: true,
+            complete: (results) => {
+              values = results.data;
+              res();
+            },
+          });
+      });
+    }
+    mutate(values, {
+      onSuccess: () => {
+        formFields.forEach((name) => setValue(name, ""));
+        alert("Formularz został wysłany");
+      },
+      onError: () => alert("Nie udało się wysłać. Spróbuj ponownie."),
+    });
+  };
+
+  const handleFileUpload = (file: File) => {
+    if (file.type !== "text/csv")
+      return alert("Możesz dodawać tylko pliki CSV");
+    setCsvFile(file);
+    setUploadMode("file");
   };
 
   const generateInput = (
@@ -53,44 +86,51 @@ export const AddEntry = () => {
             "title",
             "Tytuł",
             { type: "text", placeholder: "Wpisz tytuł" },
-            { required: true }
+            { required: uploadMode === "form" }
           )}
           {generateInput(
             "areaName",
             "Nazwa obszaru",
             { type: "text", placeholder: "Wpisz nazwę obszaru" },
-            { required: true }
+            { required: uploadMode === "form" }
           )}
           {generateInput(
             "type",
             "Typ",
             { type: "text", placeholder: "Wpisz typ" },
-            { required: true }
+            { required: uploadMode === "form" }
           )}
           {generateInput(
             "id",
             "ID",
             { type: "number", placeholder: "Wpisz ID" },
-            { required: true, pattern: /\d{5}/ }
+            { required: uploadMode === "form", pattern: validationRules.id }
           )}
           {generateInput(
             "date",
             "Data",
             { type: "text", placeholder: "Wpisz datę" },
-            { required: true, pattern: /\d{4}-\d{2}-\d{2}/ }
+            { required: uploadMode === "form", pattern: validationRules.date }
           )}
           {generateInput(
             "duration",
             "Czas trwania",
             { type: "number", placeholder: "Wpisz czas trwania" },
-            { required: true }
+            { required: uploadMode === "form" }
           )}
           {generateInput(
             "units",
             "Liczba sztuk",
             { type: "number", placeholder: "Wpisz liczbę sztuk" },
-            { required: true }
+            { required: uploadMode === "form" }
           )}
+          {generateInput("file", "Plik", {
+            type: "file",
+            accept: ".csv",
+            // TODO: get rid of ts-ignore
+            // @ts-ignore
+            onInput: (e) => handleFileUpload(e.target.files[0]),
+          })}
         </>
       </form>
       <button onClick={() => handleSubmit(onSubmit)()} title="Wyślij formularz">
