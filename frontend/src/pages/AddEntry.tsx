@@ -1,9 +1,10 @@
-import React, { InputHTMLAttributes, useState } from "react";
+import { InputHTMLAttributes, useEffect, useState } from "react";
 import { useForm, RegisterOptions } from "react-hook-form";
 import { usePostOrders } from "../queries/hooks/usePostOrders";
-import { validationRules } from "../utils/constants";
+import { ordersValidationRules } from "../utils/constants";
 import Papa from "papaparse";
 import { Order, Orders } from "../types/DTOs";
+import { validateOrders } from "../utils/functions/validateOrders";
 
 const formFields = [
   "title",
@@ -24,25 +25,37 @@ export const AddEntry = () => {
     getValues,
     setValue,
     formState: { errors },
+    watch,
   } = useForm<Order & { file: File }>();
   const { mutate } = usePostOrders();
-  const [uploadMode, setUploadMode] = useState<"form" | "file">("file");
+  const [uploadMode, setUploadMode] = useState<"form" | "file">("form");
   const [csvFile, setCsvFile] = useState<File>();
+
+  const fileInput = watch("file");
+
+  useEffect(() => {
+    if (!fileInput) setUploadMode("form");
+  }, [fileInput]);
 
   const onSubmit = async () => {
     let values: Orders = [getValues()];
     if (uploadMode === "file") {
-      await new Promise<void>((res) => {
+      const extractedOrders = await new Promise<Orders>((res) => {
         // TODO: handle case when CSV file doesn't exist
         csvFile &&
           Papa.parse<Order>(csvFile, {
             header: true,
             complete: (results) => {
               values = results.data;
-              res();
+              res(values);
             },
           });
       });
+      if (!validateOrders(extractedOrders)) {
+        formFields.forEach((name) => setValue(name, ""));
+        alert("Nieprawidłowe dane w pliku!");
+        return;
+      }
     }
     mutate(values, {
       onSuccess: () => {
@@ -71,7 +84,14 @@ export const AddEntry = () => {
       <input
         id={name}
         {...inputArgs}
-        {...register(name, { ...registerArgs })}
+        {...register(name, {
+          pattern:
+            Object.keys(ordersValidationRules).includes(name) &&
+            // TODO: get rid of ts-ignore
+            // @ts-ignore
+            ordersValidationRules[name],
+          ...registerArgs,
+        })}
       />
       {/* TODO: add invalid fields feedback */}
       <span>{errors[name]?.message as string}</span>
@@ -85,43 +105,74 @@ export const AddEntry = () => {
           {generateInput(
             "title",
             "Tytuł",
-            { type: "text", placeholder: "Wpisz tytuł" },
+            {
+              type: "text",
+              placeholder: "Wpisz tytuł",
+              disabled: uploadMode !== "form",
+            },
             { required: uploadMode === "form" }
           )}
           {generateInput(
             "areaName",
             "Nazwa obszaru",
-            { type: "text", placeholder: "Wpisz nazwę obszaru" },
+            {
+              type: "text",
+              placeholder: "Wpisz nazwę obszaru",
+              disabled: uploadMode !== "form",
+            },
             { required: uploadMode === "form" }
           )}
           {generateInput(
             "type",
             "Typ",
-            { type: "text", placeholder: "Wpisz typ" },
+            {
+              type: "text",
+              placeholder: "Wpisz typ",
+              disabled: uploadMode !== "form",
+            },
             { required: uploadMode === "form" }
           )}
           {generateInput(
             "id",
             "ID",
-            { type: "number", placeholder: "Wpisz ID" },
-            { required: uploadMode === "form", pattern: validationRules.id }
+            {
+              type: "number",
+              placeholder: "Wpisz ID",
+              disabled: uploadMode !== "form",
+            },
+            {
+              required: uploadMode === "form",
+              pattern: ordersValidationRules.id,
+            }
           )}
           {generateInput(
             "date",
             "Data",
-            { type: "text", placeholder: "Wpisz datę" },
-            { required: uploadMode === "form", pattern: validationRules.date }
+            {
+              type: "text",
+              placeholder: "Wpisz datę",
+              disabled: uploadMode !== "form",
+            },
+            { required: uploadMode === "form" }
           )}
           {generateInput(
             "duration",
             "Czas trwania",
-            { type: "number", placeholder: "Wpisz czas trwania" },
+            {
+              type: "number",
+              placeholder: "Wpisz czas trwania",
+              disabled: uploadMode !== "form",
+            },
             { required: uploadMode === "form" }
           )}
           {generateInput(
             "units",
             "Liczba sztuk",
-            { type: "number", placeholder: "Wpisz liczbę sztuk" },
+            {
+              type: "number",
+              placeholder: "Wpisz liczbę sztuk",
+              disabled: uploadMode !== "form",
+            },
             { required: uploadMode === "form" }
           )}
           {generateInput("file", "Plik", {
