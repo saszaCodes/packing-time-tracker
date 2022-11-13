@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./index.ts",
-    "db:migrate": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --knexfile ./lib/knex/knexfile.js"
+    "db:migrate": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --knexfile ./lib/knex/knexfile.js",
+    "db:migrate:down": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:down --knexfile ./lib/knex/knexfile.js"
   },
   "repository": {
     "type": "git",
