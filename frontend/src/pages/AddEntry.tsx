@@ -5,6 +5,31 @@ import { ordersValidationRules } from "../utils/constants";
 import Papa from "papaparse";
 import { Order, Orders } from "../types/DTOs";
 import { validateOrders } from "../utils/functions/validateOrders";
+import styled from "styled-components";
+import { Button } from "../styledComponents/styledComponents";
+
+const InputContainer = styled.div`
+  margin: 8px;
+  display: flex;
+  align-items: center;
+`;
+
+const InputLabel = styled.label`
+  margin-right: 16px;
+`;
+
+const InputFieldContainer = styled.div`
+  flex: 1;
+`;
+
+const InputField = styled.input`
+  border-radius: 15px;
+  border: 1px solid lightgray;
+  padding: 8px;
+  width: 100%;
+`;
+
+const InputError = styled.span``;
 
 const formFields = [
   "title",
@@ -79,23 +104,25 @@ export const AddEntry = () => {
     inputArgs?: Omit<InputHTMLAttributes<HTMLInputElement>, "id">,
     registerArgs?: Partial<RegisterOptions>
   ) => (
-    <div>
-      <label htmlFor={name}>{label}</label>
-      <input
-        id={name}
-        {...inputArgs}
-        {...register(name, {
-          pattern:
-            Object.keys(ordersValidationRules).includes(name) &&
-            // TODO: get rid of ts-ignore
-            // @ts-ignore
-            ordersValidationRules[name],
-          ...registerArgs,
-        })}
-      />
+    <InputContainer>
+      <InputLabel htmlFor={name}>{label}</InputLabel>
+      <InputFieldContainer>
+        <InputField
+          id={name}
+          {...inputArgs}
+          {...register(name, {
+            pattern:
+              Object.keys(ordersValidationRules).includes(name) &&
+              // TODO: get rid of ts-ignore
+              // @ts-ignore
+              ordersValidationRules[name],
+            ...registerArgs,
+          })}
+        />
+      </InputFieldContainer>
       {/* TODO: add invalid fields feedback */}
-      <span>{errors[name]?.message as string}</span>
-    </div>
+      <InputError>{errors[name]?.message as string}</InputError>
+    </InputContainer>
   );
 
   return (
@@ -184,9 +211,9 @@ export const AddEntry = () => {
           })}
         </>
       </form>
-      <button onClick={() => handleSubmit(onSubmit)()} title="Wyślij formularz">
+      <Button onClick={() => handleSubmit(onSubmit)()} title="Wyślij formularz">
         Wyślij formularz
-      </button>
+      </Button>
     </>
   );
 };

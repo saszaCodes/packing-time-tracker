@@ -1,7 +1,17 @@
 import { useState } from "react";
 import { useGetOrders } from "../../queries/hooks/useGetOrders";
+import { Button } from "../../styledComponents/styledComponents";
 import { Chart } from "./components/Chart";
 import { Table } from "./components/Table";
+import styled from "styled-components";
+
+const ButtonsContainer = styled.div`
+  margin-bottom: 12px;
+`;
+
+const ContentContainer = styled.div`
+  padding: 12px;
+`;
 
 export const DisplayEntries = () => {
   const { data: orders } = useGetOrders();
@@ -15,19 +25,19 @@ export const DisplayEntries = () => {
 
   return (
     <>
-      <div>
-        <button disabled={activeDisplay === "table"} onClick={toggleDisplay}>
-          TABLE
-        </button>
-        <button disabled={activeDisplay === "chart"} onClick={toggleDisplay}>
-          CHART
-        </button>
-      </div>
+      <ButtonsContainer>
+        <Button disabled={activeDisplay === "table"} onClick={toggleDisplay}>
+          Wyświetl w formie tabeli
+        </Button>
+        <Button disabled={activeDisplay === "chart"} onClick={toggleDisplay}>
+          Wyświetl w formie wykresu
+        </Button>
+      </ButtonsContainer>
       {orders ? (
-        <>
-          <div>{activeDisplay === "table" && <Table orders={orders} />}</div>
-          <div>{activeDisplay === "chart" && <Chart orders={orders} />}</div>
-        </>
+        <ContentContainer>
+          {activeDisplay === "table" && <Table orders={orders} />}
+          {activeDisplay === "chart" && <Chart orders={orders} />}
+        </ContentContainer>
       ) : (
         <div>Loading...</div>
       )}

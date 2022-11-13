@@ -1,7 +1,25 @@
-import moment from "moment";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Order, Orders } from "../../../types/DTOs";
 import { sortOrdersBy } from "../../../utils/functions/sortOrdersBy";
+import styled from "styled-components";
+
+const StyledTable = styled.table`
+  border-collapse: collapse;
+`;
+
+const Cell = styled.td`
+  padding: 8px 12px;
+  border: 1px solid lightgray;
+`;
+
+const ColHeader = styled(Cell)`
+  text-transform: capitalize;
+  font-weight: bold;
+  text-align: center;
+  :hover {
+    background-color: rgb(235, 235, 235);
+  }
+`;
 
 type TableColumn = keyof Order;
 type TableProps = { orders: Orders };
@@ -31,7 +49,7 @@ export const Table = (p: TableProps) => {
     const tableHeaders = (
       <tr>
         {columns.map((column) => (
-          <th onClick={() => sortRowsBy(column)}>{column}</th>
+          <ColHeader onClick={() => sortRowsBy(column)}>{column}</ColHeader>
         ))}
       </tr>
     );
@@ -39,7 +57,7 @@ export const Table = (p: TableProps) => {
     const tableRows = rows.map((row) => (
       <tr>
         {columns.map((column) => (
-          <td>{row[column]}</td>
+          <Cell>{row[column]}</Cell>
         ))}
       </tr>
     ));
@@ -52,5 +70,5 @@ export const Table = (p: TableProps) => {
     );
   };
 
-  return <table>{generateRows()}</table>;
+  return <StyledTable>{generateRows()}</StyledTable>;
 };
