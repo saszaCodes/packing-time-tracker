@@ -8,7 +8,7 @@ module.exports = {
       table.string("type").notNullable();
       table.string("date").notNullable();
       table.integer("units").notNullable();
-      table.integer("durations").notNullable();
+      table.integer("duration").notNullable();
     });
   },
   down: async function (knex) {
