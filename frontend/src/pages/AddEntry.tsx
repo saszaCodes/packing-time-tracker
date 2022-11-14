@@ -29,6 +29,13 @@ const InputField = styled.input`
   width: 100%;
 `;
 
+const Select = styled.select`
+  border-radius: 15px;
+  border: 1px solid lightgray;
+  padding: 8px;
+  width: 100%;
+`;
+
 const InputError = styled.span``;
 
 const formFields = [
@@ -149,16 +156,17 @@ export const AddEntry = () => {
             },
             { required: uploadMode === "form" }
           )}
-          {generateInput(
-            "type",
-            "Typ",
-            {
-              type: "text",
-              placeholder: "Wpisz typ",
-              disabled: uploadMode !== "form",
-            },
-            { required: uploadMode === "form" }
-          )}
+          <InputContainer>
+            <InputLabel>Wybierz typ</InputLabel>
+            <InputFieldContainer>
+              <Select defaultValue={"Typ 1"} {...register("type")}>
+                <option value={"Typ 1"}>Typ 1</option>
+                <option value={"Typ 2"}>Typ 2</option>
+                <option value={"Typ 3"}>Typ 3</option>
+              </Select>
+            </InputFieldContainer>
+          </InputContainer>
+
           {generateInput(
             "id",
             "ID",

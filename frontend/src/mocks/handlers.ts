@@ -34,7 +34,7 @@ export const getOrdersResponse: ServerResponsePayloads["/orders"]["get"] = [
     title: "test title 4",
     areaName: "test area name",
     type: "Typ 3",
-    id: 12347,
+    id: 12348,
     date: "2021-10-10",
     duration: 323,
     units: 36772,
@@ -43,7 +43,7 @@ export const getOrdersResponse: ServerResponsePayloads["/orders"]["get"] = [
     title: "test title 5",
     areaName: "test area name",
     type: "Typ 3",
-    id: 12347,
+    id: 12349,
     date: "2021-10-10",
     duration: 8931,
     units: 721,
@@ -70,6 +70,6 @@ export const handlersRespondingWithError = [
     return await res(ctx.status(500));
   }),
   rest.post(ordersUrl, async (req, res, ctx) => {
-    return await res(ctx.status(200));
+    return await res(ctx.status(500));
   }),
 ];

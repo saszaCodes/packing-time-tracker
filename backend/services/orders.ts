@@ -1,5 +1,4 @@
 import { OrdersModel } from "../models/orders";
-import express from "express";
 import { ExpressRouterHandler, Order } from "../types/types";
 
 export const ordersService = new (class OrdersService {
@@ -8,7 +7,6 @@ export const ordersService = new (class OrdersService {
   getOrders: ExpressRouterHandler = async (req, res, next) => {
     try {
       const orders = await this.orders.read();
-      console.log(orders);
       res.status(200).send(orders);
     } catch (err) {
       next(err);
@@ -18,9 +16,17 @@ export const ordersService = new (class OrdersService {
   postOrder: ExpressRouterHandler<Order> = async (req, res, next) => {
     try {
       const { body } = req;
-      // @ts-ignore
-      const updatedOrders = await this.orders.update(body, Object.keys(body));
-      res.status(200).send(updatedOrders);
+      const newOrder =
+        Object.keys(body.file || {}).length === 0 ? body[0] : body.file;
+
+      const parsedBody = {
+        newOrder,
+        id: undefined,
+        orderId: body.id,
+        file: undefined,
+      };
+      const createdOrder = await this.orders.create(parsedBody);
+      res.status(200).send(createdOrder);
     } catch (err) {
       next(err);
     }

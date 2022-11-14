@@ -9,6 +9,9 @@ export const usePostOrders = () => {
       await fetch(ordersUrl, {
         method: "POST",
         body: JSON.stringify(formValues),
+        headers: {
+          "Content-Type": "application/json",
+        },
       }).then((res) => res.json())
   );
   return { ...mutationResponse };
