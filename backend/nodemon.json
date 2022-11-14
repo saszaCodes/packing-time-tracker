@@ -1,5 +1,0 @@
-{
-  "execmap": {
-    "ts": "ts-node/esm"
-  }
-}

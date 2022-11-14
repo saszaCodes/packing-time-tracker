@@ -9,6 +9,7 @@ module.exports = {
       table.string("date").notNullable();
       table.integer("units").notNullable();
       table.integer("duration").notNullable();
+      table.integer("deleted_at");
     });
   },
   down: async function (knex) {
