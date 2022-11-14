@@ -5,6 +5,11 @@ export const Subtitle = styled.h2`
   font-size: 1.2em;
 `;
 
+export const SubtitleSmall = styled.h3`
+  text-align: center;
+  font-size: 1.05em;
+`;
+
 export const Button = styled.button`
   padding: 8px;
   margin: 8px;

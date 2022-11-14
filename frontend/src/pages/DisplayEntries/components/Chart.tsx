@@ -1,68 +1,64 @@
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
-import { sortOrdersBy } from "../../../utils/functions/sortOrdersBy";
 import { Orders } from "../../../types/DTOs";
+import { getTotalInIntervals } from "../../../utils/functions/getTotalInIntervals";
+import styled from "styled-components";
+import { Button } from "../../../styledComponents/styledComponents";
 
-export type Timescale = "day" | "week" | "month";
-// type Value = "meanPackingTime" | "totalPackingTime" | "totalUnits";
-// type ChartData = (typeof getOrdersResponse['orders'] & { dayStart: number, weekStart: number, monthStart: number })[]
-type ChartData = Orders;
 type ChartProps = { orders: Orders };
 
+const Container = styled.div`
+  display: flex;
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
 export const Chart = (p: ChartProps) => {
-  // const [timescale, setTimescale] = useState<Timescale>("day");
-  // const [valuesShown, setValuesShown] = useState<Record<Value, boolean>>({
-  //   totalPackingTime: true,
-  //   meanPackingTime: true,
-  //   totalUnits: true,
-  // });
-  const [data, setData] = useState<ChartData>();
+  const [data, setData] = useState<any[]>([]);
+  const [interval, setInterval] = useState<"day" | "week" | "month" | "year">(
+    "day"
+  );
 
   useEffect(() => {
-    const newData = sortOrdersBy(p.orders, "date");
+    const totalPackingTimes = getTotalInIntervals(
+      p.orders,
+      "duration",
+      interval
+    );
+    const totalUnits = getTotalInIntervals(p.orders, "units", interval);
+    const newData = totalPackingTimes.map((totalPackingTime, index) => ({
+      intervalStart: totalPackingTime.intervalStart,
+      totalPackingTime: totalPackingTime.total,
+      totalUnits: totalUnits[index].total,
+      meanPackingTime: totalPackingTime.total / totalUnits[index].total,
+    }));
     setData(newData);
-  }, [p.orders]);
-
-  // const toggleValueShown = (value: Value) => {
-  //   const newValuesShown = { ...valuesShown };
-  //   newValuesShown[value] = !newValuesShown[value];
-  //   setValuesShown(newValuesShown);
-  // };
-
-  // const getOrrdersWithStartDates = (orders: typeof getOrdersResponse['orders']) => orders.map((order) => ({
-  //   ...order,
-  //   dayStart: moment(order.)
-  // }))
-
-  // const getTotal = (value: "units" | "packingTime", timescale: Timescale) => {
-  //   if (value === 'packingTime') {
-
-  //   }
-  // };
+  }, [p.orders, interval]);
 
   return (
-    <>
+    <Container>
       <BarChart data={data} width={400} height={400}>
-        <XAxis dataKey="date" />
+        <XAxis dataKey="intervalStart" />
         <YAxis />
-        <Bar dataKey="duration" />
+        <Bar label="Całkowity czas pakowania" dataKey="totalPackingTime" />
+        <Bar label="Całkowita liczba sztuk" dataKey="totalUnits" />
+        <Bar label="Średni czas pakowania" dataKey="meanPackingTime" />
         <Tooltip />
       </BarChart>
-      {/* TODO: fix typing to not use 'as' */}
-      {/* <select onChange={(e) => setTimescale(e.target.value as Timescale)}>
-        <option value="day">Dzień</option>
-        <option value="week">Tydzień</option>
-        <option value="month">Miesiąc</option>
-      </select> */}
-      {/* <button onClick={() => toggleValueShown("meanPackingTime")}>
-        Przełącz widoczność średniego czasu pakowania
-      </button>
-      <button onClick={() => toggleValueShown("totalPackingTime")}>
-        Przełącz widoczność całkowitego czasu pakowania
-      </button>
-      <button onClick={() => toggleValueShown("totalUnits")}>
-        Przełącz widoczność całkowitej liczby jednostek
-      </button> */}
-    </>
+      <ButtonsContainer>
+        <Button onClick={() => setInterval("day")}>Wyświetl według dni</Button>
+        <Button onClick={() => setInterval("week")}>
+          Wyświetl według tygodni
+        </Button>
+        <Button onClick={() => setInterval("month")}>
+          Wyświetl według miesięcy
+        </Button>
+        <Button onClick={() => setInterval("year")}>Wyświetl według lat</Button>
+      </ButtonsContainer>
+    </Container>
   );
 };

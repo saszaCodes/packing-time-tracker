@@ -6,7 +6,7 @@ export const getOrdersResponse: ServerResponsePayloads["/orders"]["get"] = [
   {
     title: "test title",
     areaName: "test area name",
-    type: "Test",
+    type: "Typ 1",
     id: 12345,
     date: "2022-10-10",
     duration: 541,
@@ -15,7 +15,7 @@ export const getOrdersResponse: ServerResponsePayloads["/orders"]["get"] = [
   {
     title: "test title 2",
     areaName: "test area name",
-    type: "Test",
+    type: "Typ 2",
     id: 12346,
     date: "2022-10-10",
     duration: 17,
@@ -24,7 +24,7 @@ export const getOrdersResponse: ServerResponsePayloads["/orders"]["get"] = [
   {
     title: "test title 3",
     areaName: "test area name",
-    type: "Test",
+    type: "Typ 4",
     id: 12347,
     date: "2024-10-10",
     duration: 1000,
@@ -33,7 +33,7 @@ export const getOrdersResponse: ServerResponsePayloads["/orders"]["get"] = [
   {
     title: "test title 4",
     areaName: "test area name",
-    type: "Test",
+    type: "Typ 3",
     id: 12347,
     date: "2021-10-10",
     duration: 323,
@@ -42,7 +42,7 @@ export const getOrdersResponse: ServerResponsePayloads["/orders"]["get"] = [
   {
     title: "test title 5",
     areaName: "test area name",
-    type: "Test",
+    type: "Typ 3",
     id: 12347,
     date: "2021-10-10",
     duration: 8931,

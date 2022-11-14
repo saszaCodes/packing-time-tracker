@@ -4,11 +4,11 @@ import { QueryProvider } from "./queries/QueryProvider";
 import styled from "styled-components";
 import { Subtitle } from "./styledComponents/styledComponents";
 
-if (["development", "test"].includes(process.env.NODE_ENV)) {
-  console.log("Worker is registered");
-  const { worker } = require("./mocks/browser");
-  worker.start();
-}
+// if (["development", "test"].includes(process.env.NODE_ENV)) {
+//   console.log("Worker is registered");
+//   const { worker } = require("./mocks/browser");
+//   worker.start();
+// }
 
 const Container = styled.div`
   width: 100%;

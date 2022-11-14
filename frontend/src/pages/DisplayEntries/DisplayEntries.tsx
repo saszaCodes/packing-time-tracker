@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetOrders } from "../../queries/hooks/useGetOrders";
 import { Button } from "../../styledComponents/styledComponents";
 import { Chart } from "./components/Chart";
 import { Table } from "./components/Table";
 import styled from "styled-components";
+import { FilterBar } from "./components/FilterBar";
+import { Orders } from "../../types/DTOs";
 
 const ButtonsContainer = styled.div`
   margin-bottom: 12px;
@@ -14,7 +16,8 @@ const ContentContainer = styled.div`
 `;
 
 export const DisplayEntries = () => {
-  const { data: orders } = useGetOrders();
+  const { data: fetchedOrders } = useGetOrders();
+  const [orders, setOrders] = useState<Orders>();
   const [activeDisplay, setActiveDisplay] = useState<"table" | "chart">(
     "table"
   );
@@ -23,8 +26,33 @@ export const DisplayEntries = () => {
     setActiveDisplay("table");
   };
 
+  useEffect(() => {
+    fetchedOrders && setOrders(fetchedOrders);
+    console.log({ fetchedOrders });
+  }, [fetchedOrders]);
+
+  useEffect(() => {
+    console.log({ orders });
+  }, [orders]);
+
+  console.log("RERENDER");
+
   return (
     <>
+      {orders ? (
+        <>
+          <FilterBar
+            orders={fetchedOrders || []}
+            setFilteredOrders={setOrders}
+          />
+          <ContentContainer>
+            {activeDisplay === "table" && <Table orders={orders} />}
+            {activeDisplay === "chart" && <Chart orders={orders} />}
+          </ContentContainer>
+        </>
+      ) : (
+        <div>Loading...</div>
+      )}
       <ButtonsContainer>
         <Button disabled={activeDisplay === "table"} onClick={toggleDisplay}>
           Wyświetl w formie tabeli
@@ -33,14 +61,6 @@ export const DisplayEntries = () => {
           Wyświetl w formie wykresu
         </Button>
       </ButtonsContainer>
-      {orders ? (
-        <ContentContainer>
-          {activeDisplay === "table" && <Table orders={orders} />}
-          {activeDisplay === "chart" && <Chart orders={orders} />}
-        </ContentContainer>
-      ) : (
-        <div>Loading...</div>
-      )}
     </>
   );
 };
